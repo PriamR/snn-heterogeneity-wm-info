@@ -1,0 +1,368 @@
+Device: cuda
+Train file exists: True
+Test file exists: True
+Tau artifact exists: True
+Run directory: C:\Users\Priya\Desktop\research project (SNN Info Theory)\Project Files\Checkpoints\SeededRuns\seeded_run_1\4class_lognormal
+Master seeds: [101, 202, 210, 340, 440]
+Task name: 4class_parity_language
+Task outputs: 4
+   pair_seed task_key  ... hetero_hidden_tau_std_ms sample_matches_previous
+0        101   4class  ...                30.195999                   False
+1        202   4class  ...                30.480470                   False
+2        210   4class  ...                29.713145                   False
+3        340   4class  ...                30.389582                   False
+4        440   4class  ...                31.915950                   False
+
+[5 rows x 13 columns]
+4-class parityÅ~language task mapping verified.
+Homogeneous anchor and heterogeneous sampled definitions verified.
+Log-normal hidden tau_m sampling varies across the configured seeds.
+Pre-loading SHD training data into RAM...
+  SHDCache: 8156 samples loaded from shd_train.h5
+Pre-loading SHD test data into RAM...
+  SHDCache: 2264 samples loaded from shd_test.h5
+Run helpers ready.
+Execute one seed cell at a time. Finished seeds are reused from saved checkpoints.
+
+Seed 101 :: training homogeneous_anchor...
+  epoch=001  train_acc=0.328  test_acc=0.399  (2.9 min)
+  epoch=002  train_acc=0.414  test_acc=0.413  (2.7 min)
+  epoch=003  train_acc=0.433  test_acc=0.402  (2.9 min)
+  epoch=004  train_acc=0.466  test_acc=0.435  (3.0 min)
+  epoch=005  train_acc=0.477  test_acc=0.446  (3.3 min)
+  epoch=006  train_acc=0.507  test_acc=0.453  (3.4 min)
+  epoch=007  train_acc=0.532  test_acc=0.502  (3.7 min)
+  epoch=008  train_acc=0.565  test_acc=0.545  (4.6 min)
+  epoch=009  train_acc=0.590  test_acc=0.536  (4.2 min)
+  epoch=010  train_acc=0.600  test_acc=0.547  (4.2 min)
+  epoch=011  train_acc=0.627  test_acc=0.585  (4.0 min)
+  epoch=012  train_acc=0.646  test_acc=0.572  (4.0 min)
+  epoch=013  train_acc=0.655  test_acc=0.566  (3.4 min)
+  epoch=014  train_acc=0.683  test_acc=0.600  (3.7 min)
+  epoch=015  train_acc=0.695  test_acc=0.596  (3.9 min)
+  epoch=016  train_acc=0.718  test_acc=0.600  (3.6 min)
+  epoch=017  train_acc=0.725  test_acc=0.596  (3.5 min)
+  epoch=018  train_acc=0.734  test_acc=0.608  (3.6 min)
+  epoch=019  train_acc=0.740  test_acc=0.628  (3.6 min)
+  epoch=020  train_acc=0.748  test_acc=0.626  (3.5 min)
+  epoch=021  train_acc=0.750  test_acc=0.612  (3.3 min)
+  epoch=022  train_acc=0.758  test_acc=0.629  (3.2 min)
+  epoch=023  train_acc=0.778  test_acc=0.646  (3.2 min)
+  epoch=024  train_acc=0.782  test_acc=0.624  (4.9 min)
+  epoch=025  train_acc=0.796  test_acc=0.626  (6.3 min)
+
+Seed 101 :: training heterogeneous_sampled...
+  epoch=001  train_acc=0.266  test_acc=0.259  (6.4 min)
+  epoch=002  train_acc=0.339  test_acc=0.304  (6.7 min)
+  epoch=003  train_acc=0.365  test_acc=0.328  (6.0 min)
+  epoch=004  train_acc=0.392  test_acc=0.385  (6.1 min)
+  epoch=005  train_acc=0.430  test_acc=0.375  (6.3 min)
+  epoch=006  train_acc=0.460  test_acc=0.395  (6.2 min)
+  epoch=007  train_acc=0.504  test_acc=0.428  (7.1 min)
+  epoch=008  train_acc=0.528  test_acc=0.418  (6.4 min)
+  epoch=009  train_acc=0.555  test_acc=0.452  (6.5 min)
+  epoch=010  train_acc=0.568  test_acc=0.473  (5.0 min)
+  epoch=011  train_acc=0.582  test_acc=0.481  (4.0 min)
+  epoch=012  train_acc=0.598  test_acc=0.460  (4.2 min)
+  epoch=013  train_acc=0.611  test_acc=0.480  (3.3 min)
+  epoch=014  train_acc=0.628  test_acc=0.474  (3.4 min)
+  epoch=015  train_acc=0.629  test_acc=0.488  (3.5 min)
+  epoch=016  train_acc=0.644  test_acc=0.494  (3.4 min)
+  epoch=017  train_acc=0.643  test_acc=0.502  (3.2 min)
+  epoch=018  train_acc=0.653  test_acc=0.483  (3.2 min)
+  epoch=019  train_acc=0.662  test_acc=0.497  (3.2 min)
+  epoch=020  train_acc=0.670  test_acc=0.502  (3.2 min)
+  epoch=021  train_acc=0.672  test_acc=0.500  (3.2 min)
+  epoch=022  train_acc=0.683  test_acc=0.496  (3.6 min)
+  epoch=023  train_acc=0.688  test_acc=0.512  (3.5 min)
+  epoch=024  train_acc=0.693  test_acc=0.504  (3.4 min)
+  epoch=025  train_acc=0.705  test_acc=0.495  (3.5 min)
+   pair_seed              pair_role  ...  final_test_loss    elapsed_s
+0        101  heterogeneous_sampled  ...         1.190044  6885.448813
+1        101     homogeneous_anchor  ...         0.944988  5559.431089
+
+[2 rows x 5 columns]
+   pair_seed task_key  ... linear_sync_verified checked_parameter_count
+0        101   4class  ...                 True                       6
+
+[1 rows x 14 columns]
+
+Seed 202 :: training homogeneous_anchor...
+  epoch=001  train_acc=0.354  test_acc=0.386  (3.7 min)
+  epoch=002  train_acc=0.424  test_acc=0.387  (3.6 min)
+  epoch=003  train_acc=0.466  test_acc=0.394  (3.4 min)
+  epoch=004  train_acc=0.483  test_acc=0.417  (3.2 min)
+  epoch=005  train_acc=0.497  test_acc=0.443  (3.3 min)
+  epoch=006  train_acc=0.516  test_acc=0.430  (2.7 min)
+  epoch=007  train_acc=0.537  test_acc=0.435  (2.6 min)
+  epoch=008  train_acc=0.568  test_acc=0.489  (2.6 min)
+  epoch=009  train_acc=0.608  test_acc=0.496  (2.6 min)
+  epoch=010  train_acc=0.620  test_acc=0.536  (2.6 min)
+  epoch=011  train_acc=0.636  test_acc=0.575  (2.6 min)
+  epoch=012  train_acc=0.653  test_acc=0.554  (2.6 min)
+  epoch=013  train_acc=0.664  test_acc=0.559  (2.6 min)
+  epoch=014  train_acc=0.676  test_acc=0.564  (2.7 min)
+  epoch=015  train_acc=0.684  test_acc=0.585  (2.7 min)
+  epoch=016  train_acc=0.696  test_acc=0.583  (2.7 min)
+  epoch=017  train_acc=0.694  test_acc=0.564  (2.8 min)
+  epoch=018  train_acc=0.710  test_acc=0.565  (2.8 min)
+  epoch=019  train_acc=0.720  test_acc=0.561  (2.7 min)
+  epoch=020  train_acc=0.737  test_acc=0.575  (2.8 min)
+  epoch=021  train_acc=0.733  test_acc=0.574  (2.7 min)
+  epoch=022  train_acc=0.742  test_acc=0.598  (2.9 min)
+  epoch=023  train_acc=0.748  test_acc=0.576  (3.3 min)
+  epoch=024  train_acc=0.755  test_acc=0.573  (218.8 min)
+  epoch=025  train_acc=0.757  test_acc=0.599  (2.8 min)
+
+Seed 202 :: training heterogeneous_sampled...
+  epoch=001  train_acc=0.310  test_acc=0.330  (2.9 min)
+  epoch=002  train_acc=0.349  test_acc=0.334  (2.8 min)
+  epoch=003  train_acc=0.367  test_acc=0.328  (2.9 min)
+  epoch=004  train_acc=0.389  test_acc=0.383  (2.8 min)
+  epoch=005  train_acc=0.415  test_acc=0.405  (2.8 min)
+  epoch=006  train_acc=0.454  test_acc=0.429  (2.7 min)
+  epoch=007  train_acc=0.472  test_acc=0.434  (2.7 min)
+  epoch=008  train_acc=0.493  test_acc=0.465  (2.7 min)
+  epoch=009  train_acc=0.541  test_acc=0.519  (2.8 min)
+  epoch=010  train_acc=0.567  test_acc=0.511  (2.8 min)
+  epoch=011  train_acc=0.586  test_acc=0.516  (2.8 min)
+  epoch=012  train_acc=0.607  test_acc=0.526  (2.8 min)
+  epoch=013  train_acc=0.617  test_acc=0.514  (2.7 min)
+  epoch=014  train_acc=0.617  test_acc=0.531  (2.7 min)
+  epoch=015  train_acc=0.632  test_acc=0.537  (2.7 min)
+  epoch=016  train_acc=0.645  test_acc=0.543  (2.8 min)
+  epoch=017  train_acc=0.654  test_acc=0.522  (2.8 min)
+  epoch=018  train_acc=0.669  test_acc=0.561  (2.7 min)
+  epoch=019  train_acc=0.681  test_acc=0.559  (2.7 min)
+  epoch=020  train_acc=0.691  test_acc=0.549  (2.7 min)
+  epoch=021  train_acc=0.691  test_acc=0.543  (2.8 min)
+  epoch=022  train_acc=0.703  test_acc=0.583  (2.8 min)
+  epoch=023  train_acc=0.709  test_acc=0.564  (2.8 min)
+  epoch=024  train_acc=0.711  test_acc=0.581  (2.7 min)
+  epoch=025  train_acc=0.720  test_acc=0.564  (2.8 min)
+   pair_seed              pair_role  ...  final_test_loss     elapsed_s
+0        202  heterogeneous_sampled  ...         1.090982   4149.596533
+1        202     homogeneous_anchor  ...         1.063645  17263.351055
+
+[2 rows x 5 columns]
+   pair_seed task_key  ... linear_sync_verified checked_parameter_count
+0        202   4class  ...                 True                       6
+
+[1 rows x 14 columns]
+
+Seed 210 :: training homogeneous_anchor...
+  epoch=001  train_acc=0.301  test_acc=0.303  (2.8 min)
+  epoch=002  train_acc=0.370  test_acc=0.344  (2.7 min)
+  epoch=003  train_acc=0.413  test_acc=0.357  (2.7 min)
+  epoch=004  train_acc=0.437  test_acc=0.361  (2.8 min)
+  epoch=005  train_acc=0.458  test_acc=0.372  (2.7 min)
+  epoch=006  train_acc=0.503  test_acc=0.415  (2.7 min)
+  epoch=007  train_acc=0.525  test_acc=0.420  (2.7 min)
+  epoch=008  train_acc=0.558  test_acc=0.437  (2.7 min)
+  epoch=009  train_acc=0.567  test_acc=0.410  (2.7 min)
+  epoch=010  train_acc=0.584  test_acc=0.450  (2.7 min)
+  epoch=011  train_acc=0.600  test_acc=0.474  (2.8 min)
+  epoch=012  train_acc=0.615  test_acc=0.470  (2.7 min)
+  epoch=013  train_acc=0.642  test_acc=0.474  (2.8 min)
+  epoch=014  train_acc=0.659  test_acc=0.481  (2.8 min)
+  epoch=015  train_acc=0.668  test_acc=0.485  (2.8 min)
+  epoch=016  train_acc=0.686  test_acc=0.507  (2.8 min)
+  epoch=017  train_acc=0.680  test_acc=0.519  (2.9 min)
+  epoch=018  train_acc=0.702  test_acc=0.516  (2.9 min)
+  epoch=019  train_acc=0.731  test_acc=0.508  (2.7 min)
+  epoch=020  train_acc=0.719  test_acc=0.514  (2.7 min)
+  epoch=021  train_acc=0.746  test_acc=0.511  (2.7 min)
+  epoch=022  train_acc=0.730  test_acc=0.526  (2.6 min)
+  epoch=023  train_acc=0.758  test_acc=0.531  (2.6 min)
+  epoch=024  train_acc=0.761  test_acc=0.524  (2.6 min)
+  epoch=025  train_acc=0.772  test_acc=0.546  (2.6 min)
+
+Seed 210 :: training heterogeneous_sampled...
+  epoch=001  train_acc=0.273  test_acc=0.269  (2.6 min)
+  epoch=002  train_acc=0.309  test_acc=0.327  (2.6 min)
+  epoch=003  train_acc=0.367  test_acc=0.339  (2.6 min)
+  epoch=004  train_acc=0.393  test_acc=0.344  (2.7 min)
+  epoch=005  train_acc=0.416  test_acc=0.361  (545.5 min)
+  epoch=006  train_acc=0.427  test_acc=0.373  (2.7 min)
+  epoch=007  train_acc=0.442  test_acc=0.376  (2.9 min)
+  epoch=008  train_acc=0.474  test_acc=0.397  (2.8 min)
+  epoch=009  train_acc=0.487  test_acc=0.430  (2.8 min)
+  epoch=010  train_acc=0.506  test_acc=0.470  (2.8 min)
+  epoch=011  train_acc=0.535  test_acc=0.500  (2.8 min)
+  epoch=012  train_acc=0.561  test_acc=0.481  (2.9 min)
+  epoch=013  train_acc=0.578  test_acc=0.526  (2.8 min)
+  epoch=014  train_acc=0.602  test_acc=0.531  (2.7 min)
+  epoch=015  train_acc=0.606  test_acc=0.539  (2.7 min)
+  epoch=016  train_acc=0.620  test_acc=0.554  (2.8 min)
+  epoch=017  train_acc=0.627  test_acc=0.576  (2.8 min)
+  epoch=018  train_acc=0.639  test_acc=0.576  (2.7 min)
+  epoch=019  train_acc=0.660  test_acc=0.553  (2.8 min)
+  epoch=020  train_acc=0.661  test_acc=0.588  (2.8 min)
+  epoch=021  train_acc=0.685  test_acc=0.574  (2.8 min)
+  epoch=022  train_acc=0.683  test_acc=0.581  (2.7 min)
+  epoch=023  train_acc=0.703  test_acc=0.573  (2.7 min)
+  epoch=024  train_acc=0.705  test_acc=0.595  (2.8 min)
+  epoch=025  train_acc=0.722  test_acc=0.564  (2.8 min)
+   pair_seed              pair_role  ...  final_test_loss     elapsed_s
+0        210  heterogeneous_sampled  ...         1.173871  36700.814634
+1        210     homogeneous_anchor  ...         1.259035   4098.420524
+
+[2 rows x 5 columns]
+   pair_seed task_key  ... linear_sync_verified checked_parameter_count
+0        210   4class  ...                 True                       6
+
+[1 rows x 14 columns]
+
+Seed 340 :: training homogeneous_anchor...
+  epoch=001  train_acc=0.291  test_acc=0.354  (2.7 min)
+  epoch=002  train_acc=0.363  test_acc=0.364  (2.8 min)
+  epoch=003  train_acc=0.404  test_acc=0.375  (2.8 min)
+  epoch=004  train_acc=0.440  test_acc=0.427  (2.7 min)
+  epoch=005  train_acc=0.467  test_acc=0.421  (2.8 min)
+  epoch=006  train_acc=0.478  test_acc=0.441  (2.7 min)
+  epoch=007  train_acc=0.514  test_acc=0.435  (2.7 min)
+  epoch=008  train_acc=0.518  test_acc=0.445  (2.7 min)
+  epoch=009  train_acc=0.529  test_acc=0.472  (2.7 min)
+  epoch=010  train_acc=0.551  test_acc=0.397  (2.7 min)
+  epoch=011  train_acc=0.556  test_acc=0.452  (2.7 min)
+  epoch=012  train_acc=0.582  test_acc=0.482  (2.7 min)
+  epoch=013  train_acc=0.586  test_acc=0.516  (2.7 min)
+  epoch=014  train_acc=0.609  test_acc=0.443  (2.7 min)
+  epoch=015  train_acc=0.622  test_acc=0.493  (2.7 min)
+  epoch=016  train_acc=0.632  test_acc=0.493  (2.8 min)
+  epoch=017  train_acc=0.644  test_acc=0.490  (2.7 min)
+  epoch=018  train_acc=0.648  test_acc=0.511  (2.7 min)
+  epoch=019  train_acc=0.669  test_acc=0.502  (2.7 min)
+  epoch=020  train_acc=0.679  test_acc=0.499  (2.7 min)
+  epoch=021  train_acc=0.687  test_acc=0.516  (2.7 min)
+  epoch=022  train_acc=0.702  test_acc=0.518  (2.7 min)
+  epoch=023  train_acc=0.711  test_acc=0.503  (2.7 min)
+  epoch=024  train_acc=0.725  test_acc=0.525  (2.7 min)
+  epoch=025  train_acc=0.733  test_acc=0.534  (2.7 min)
+
+Seed 340 :: training heterogeneous_sampled...
+  epoch=001  train_acc=0.301  test_acc=0.330  (2.7 min)
+  epoch=002  train_acc=0.370  test_acc=0.362  (2.7 min)
+  epoch=003  train_acc=0.408  test_acc=0.420  (2.7 min)
+  epoch=004  train_acc=0.454  test_acc=0.427  (2.7 min)
+  epoch=005  train_acc=0.501  test_acc=0.430  (2.7 min)
+  epoch=006  train_acc=0.507  test_acc=0.463  (43.7 min)
+  epoch=007  train_acc=0.529  test_acc=0.482  (2.8 min)
+  epoch=008  train_acc=0.553  test_acc=0.508  (2.8 min)
+  epoch=009  train_acc=0.570  test_acc=0.522  (2.9 min)
+  epoch=010  train_acc=0.588  test_acc=0.520  (2.8 min)
+  epoch=011  train_acc=0.606  test_acc=0.532  (2.8 min)
+  epoch=012  train_acc=0.616  test_acc=0.531  (2.8 min)
+  epoch=013  train_acc=0.632  test_acc=0.542  (2.7 min)
+  epoch=014  train_acc=0.648  test_acc=0.500  (2.8 min)
+  epoch=015  train_acc=0.651  test_acc=0.530  (2.8 min)
+  epoch=016  train_acc=0.675  test_acc=0.551  (2.8 min)
+  epoch=017  train_acc=0.683  test_acc=0.540  (2.8 min)
+  epoch=018  train_acc=0.693  test_acc=0.549  (2.8 min)
+  epoch=019  train_acc=0.697  test_acc=0.531  (2.8 min)
+  epoch=020  train_acc=0.720  test_acc=0.568  (2.8 min)
+  epoch=021  train_acc=0.721  test_acc=0.536  (2.8 min)
+  epoch=022  train_acc=0.711  test_acc=0.552  (2.8 min)
+  epoch=023  train_acc=0.724  test_acc=0.542  (2.8 min)
+  epoch=024  train_acc=0.726  test_acc=0.546  (2.8 min)
+  epoch=025  train_acc=0.740  test_acc=0.563  (2.9 min)
+   pair_seed              pair_role  ...  final_test_loss    elapsed_s
+0        340  heterogeneous_sampled  ...         1.101743  6617.713672
+1        340     homogeneous_anchor  ...         1.316056  4092.126215
+
+[2 rows x 5 columns]
+   pair_seed task_key  ... linear_sync_verified checked_parameter_count
+0        340   4class  ...                 True                       6
+
+[1 rows x 14 columns]
+
+Seed 440 :: training homogeneous_anchor...
+  epoch=001  train_acc=0.343  test_acc=0.405  (2.8 min)
+  epoch=002  train_acc=0.427  test_acc=0.422  (2.8 min)
+  epoch=003  train_acc=0.469  test_acc=0.431  (2.8 min)
+  epoch=004  train_acc=0.477  test_acc=0.458  (2.8 min)
+  epoch=005  train_acc=0.506  test_acc=0.451  (2.8 min)
+  epoch=006  train_acc=0.508  test_acc=0.466  (2.8 min)
+  epoch=007  train_acc=0.532  test_acc=0.451  (2.8 min)
+  epoch=008  train_acc=0.537  test_acc=0.447  (2.9 min)
+  epoch=009  train_acc=0.544  test_acc=0.494  (2.8 min)
+  epoch=010  train_acc=0.563  test_acc=0.468  (2.8 min)
+  epoch=011  train_acc=0.573  test_acc=0.504  (2.8 min)
+  epoch=012  train_acc=0.573  test_acc=0.504  (2.8 min)
+  epoch=013  train_acc=0.594  test_acc=0.527  (2.8 min)
+  epoch=014  train_acc=0.602  test_acc=0.537  (2.8 min)
+  epoch=015  train_acc=0.620  test_acc=0.526  (2.8 min)
+  epoch=016  train_acc=0.630  test_acc=0.523  (3.0 min)
+  epoch=017  train_acc=0.650  test_acc=0.521  (2.9 min)
+  epoch=018  train_acc=0.668  test_acc=0.542  (2.9 min)
+  epoch=019  train_acc=0.684  test_acc=0.540  (2.9 min)
+  epoch=020  train_acc=0.700  test_acc=0.493  (2.8 min)
+  epoch=021  train_acc=0.711  test_acc=0.557  (2.8 min)
+  epoch=022  train_acc=0.719  test_acc=0.561  (2.8 min)
+  epoch=023  train_acc=0.728  test_acc=0.576  (2.8 min)
+  epoch=024  train_acc=0.738  test_acc=0.566  (2.8 min)
+  epoch=025  train_acc=0.737  test_acc=0.587  (2.8 min)
+
+Seed 440 :: training heterogeneous_sampled...
+  epoch=001  train_acc=0.323  test_acc=0.417  (2.8 min)
+  epoch=002  train_acc=0.425  test_acc=0.441  (2.8 min)
+  epoch=003  train_acc=0.461  test_acc=0.470  (2.8 min)
+  epoch=004  train_acc=0.486  test_acc=0.496  (2.9 min)
+  epoch=005  train_acc=0.494  test_acc=0.486  (3.4 min)
+  epoch=006  train_acc=0.502  test_acc=0.489  (3.3 min)
+  epoch=007  train_acc=0.511  test_acc=0.480  (3.3 min)
+  epoch=008  train_acc=0.513  test_acc=0.503  (3.3 min)
+  epoch=009  train_acc=0.541  test_acc=0.482  (3.4 min)
+  epoch=010  train_acc=0.552  test_acc=0.493  (3.3 min)
+  epoch=011  train_acc=0.571  test_acc=0.486  (3.3 min)
+  epoch=012  train_acc=0.585  test_acc=0.486  (3.4 min)
+  epoch=013  train_acc=0.601  test_acc=0.494  (3.4 min)
+  epoch=014  train_acc=0.597  test_acc=0.475  (3.6 min)
+  epoch=015  train_acc=0.614  test_acc=0.481  (3.6 min)
+  epoch=016  train_acc=0.613  test_acc=0.491  (3.9 min)
+  epoch=017  train_acc=0.632  test_acc=0.502  (3.9 min)
+  epoch=018  train_acc=0.645  test_acc=0.505  (3.7 min)
+  epoch=019  train_acc=0.662  test_acc=0.507  (3.6 min)
+  epoch=020  train_acc=0.661  test_acc=0.524  (3.7 min)
+  epoch=021  train_acc=0.677  test_acc=0.538  (3.6 min)
+  epoch=022  train_acc=0.693  test_acc=0.542  (3.1 min)
+  epoch=023  train_acc=0.706  test_acc=0.554  (2.7 min)
+  epoch=024  train_acc=0.721  test_acc=0.553  (2.8 min)
+  epoch=025  train_acc=0.724  test_acc=0.572  (2.7 min)
+   pair_seed              pair_role  ...  final_test_loss    elapsed_s
+0        440  heterogeneous_sampled  ...         1.044128  4950.182690
+1        440     homogeneous_anchor  ...         0.952413  4226.259442
+
+[2 rows x 5 columns]
+   pair_seed task_key  ... linear_sync_verified checked_parameter_count
+0        440   4class  ...                 True                       6
+
+[1 rows x 14 columns]
+   pair_seed task_key  ... linear_sync_verified checked_parameter_count
+0        101   4class  ...                 True                       6
+1        202   4class  ...                 True                       6
+2        210   4class  ...                 True                       6
+3        340   4class  ...                 True                       6
+4        440   4class  ...                 True                       6
+
+[5 rows x 14 columns]
+   pair_seed              pair_role  final_test_acc  final_test_loss
+0        101  heterogeneous_sampled        0.494700         1.190044
+1        101     homogeneous_anchor        0.626325         0.944988
+2        202  heterogeneous_sampled        0.564488         1.090982
+3        202     homogeneous_anchor        0.598940         1.063645
+4        210  heterogeneous_sampled        0.564046         1.173871
+5        210     homogeneous_anchor        0.546378         1.259035
+6        340  heterogeneous_sampled        0.562721         1.101743
+7        340     homogeneous_anchor        0.534452         1.316056
+8        440  heterogeneous_sampled        0.572438         1.044128
+9        440     homogeneous_anchor        0.587456         0.952413
+pair_role  pair_seed  ...  hetero_minus_hom
+0                101  ...         -0.131625
+1                202  ...         -0.034452
+2                210  ...          0.017668
+3                340  ...          0.028269
+4                440  ...         -0.015018
+
+[5 rows x 4 columns]
+Saved paired accuracy view to: C:\Users\Priya\Desktop\research project (SNN Info Theory)\Project Files\Checkpoints\SeededRuns\seeded_run_1\4class_lognormal\seeded_run_1_paired_accuracy.csv

@@ -1,0 +1,40 @@
+# Large binary files
+*.pt
+*.pth
+*.h5
+*.npy
+*.zip
+
+# Python cache
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Checkpoint directories (too large)
+Checkpoints/
+checkpoints/
+spk_tensors/
+outputs/
+discrete_estimator_outputs/
+Null Caches/
+
+# OS files
+.DS_Store
+Thumbs.db
+_macosx/
+
+# IDE
+.vscode/
+.idea/
+
+# Jupyter
+*.ipynb_checkpoints*
+
+# Temp/backup
+Backups/
+Background Reprot/
+
+# Report figures (generated, large)
+Report Figures/
+*.png
+*.jpg

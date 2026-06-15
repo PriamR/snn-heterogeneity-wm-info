@@ -1,0 +1,57 @@
+{
+  "metadata": {
+    "label": "all_fittedhet_lu",
+    "task": "all-class",
+    "tensor": "spk",
+    "subset_sizes": [
+      2,
+      4,
+      8,
+      16,
+      32
+    ],
+    "generator": "initial_visualizations_notebook"
+  },
+  "results": [
+    {
+      "subset_size": 2,
+      "samples": 128000,
+      "observed_M_bits": 0.07552668322947031,
+      "observed_W_bits": 4.821103316346382,
+      "status": "ok",
+      "optimiser": "Adam(data)"
+    },
+    {
+      "subset_size": 4,
+      "samples": 128000,
+      "observed_M_bits": 0.19896835814080482,
+      "observed_W_bits": 7.247967356971259,
+      "status": "ok",
+      "optimiser": "Adam(data)"
+    },
+    {
+      "subset_size": 8,
+      "samples": 128000,
+      "observed_M_bits": 0.8181024464711246,
+      "observed_W_bits": 11.478160642697642,
+      "status": "ok",
+      "optimiser": "Adam(data)"
+    },
+    {
+      "subset_size": 16,
+      "samples": 128000,
+      "observed_M_bits": NaN,
+      "observed_W_bits": NaN,
+      "status": "error",
+      "error": "W/M calculation returned non-finite values"
+    },
+    {
+      "subset_size": 32,
+      "samples": 128000,
+      "observed_M_bits": NaN,
+      "observed_W_bits": NaN,
+      "status": "error",
+      "error": "W/M calculation returned non-finite values"
+    }
+  ]
+}

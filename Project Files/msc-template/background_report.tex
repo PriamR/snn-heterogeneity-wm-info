@@ -1,0 +1,710 @@
+\documentclass[12pt,twoside]{report}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Title page metadata — fill in your details
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\reporttitle}{Information Structure in Spiking Neural Networks\\[0.3em]
+                          with Temporal Heterogeneity}
+\newcommand{\reportauthor}{Priyam Rai}
+\newcommand{\supervisor}{Marcus Ghosh \& Hardik Rajpal}
+\newcommand{\degreetype}{MSc Artificial Intelligence Applications and Innovation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Pass numbered citation style to natbib BEFORE includes.tex loads it
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\PassOptionsToPackage{numbers,sort&compress}{natbib}
+
+% Load template packages and macros
+\input{includes}
+\input{notation}
+
+% Allow graphicx to find figures in the Report Figures folder (note: space in path)
+% grffile is included for robust handling of spaces in directory names.
+\usepackage{grffile}
+\graphicspath{{../Report Figures/}{./figures/}}
+
+\date{June 2026}
+
+\begin{document}
+
+% Suppress blank verso pages inserted by \cleardoublepage so they don't count
+% toward the 20-page report limit (digital submission only).
+\renewcommand{\cleardoublepage}{\clearpage}
+
+% Title page
+\input{titlepage}
+
+\pagenumbering{roman}
+\clearpage{\pagestyle{empty}\cleardoublepage}
+\setcounter{page}{1}
+\pagestyle{fancy}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage{\pagestyle{empty}\cleardoublepage}
+\fancyhead[RE,LO]{\sffamily {Table of Contents}}
+\setcounter{tocdepth}{1}
+\tableofcontents
+
+\clearpage{\pagestyle{empty}\cleardoublepage}
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\fancyhead[LE,RO]{\slshape \leftmark}
+\fancyhead[LO,RE]{}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Introduction}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Neural networks are not designed analogues to a biological understanding of the mechanism by which a brain processes information. 
+Where a standard deep learning model applies a uniform transformation at each layer, biological 
+neural circuits are built from neurons that each operate at their varying tempos. Some respond 
+sharply to brief bursts of input and fall silent within milliseconds; others accumulate 
+evidence slowly, integrating over hundreds of milliseconds before committing to a response. 
+This temporal diversity appears to be a feature rather than a flaw: it allows a population 
+of neurons to simultaneously represent fast transients and slow trends, and to support 
+collective coding behaviour that no individual cell could achieve alone~\cite{pereznieves2021}.
+
+This project takes the finding of Perez-Nieves et al.~\cite{pereznieves2021} as its 
+starting point. That study demonstrated clearly that SNNs with per-neuron timescale 
+diversity outperform homogeneous counterparts on spoken digit classification. What it 
+did not characterise is the mechanism: \emph{why}, from an information-theoretic 
+perspective, does timescale diversity lead to better representations, and does it do 
+so by enabling qualitatively different kinds of collective coding? Two questions follow 
+directly from that gap.
+
+The first is \emph{architectural}: does giving the neurons of a spiking neural network 
+(SNN) different timescales (what we call \emph{temporal heterogeneity}) change what kinds 
+of information the population can collectively encode? The second is 
+\emph{methodological}: given a trained network, how do we measure whether its collective 
+coding properties reflect genuine higher-order structure, rather than simply the pairwise 
+correlations we would expect from the network's synchrony?
+
+This project addresses both questions by training two distinct classes of recurrent SNNs on the 
+Spiking Heidelberg Digits (SHD) dataset~\cite{cramer2022}, an auditory speech benchmark 
+encoded as spike trains across 700 input channels. Two connected analytical tools are employed in 
+our analysis of the information dynamics of these networks. 
+The first is \emph{M-information}~\cite{liardiscalable}, an 
+information-theoretic measure that captures the component of population coding that is 
+genuinely synergistic: information that a group of neurons encodes together but that 
+cannot be reproduced by any pair of them in isolation. M-information is assessed against a TDMI-matched
+null distribution~\cite{liarinull} to control for pairwise correlation effects, yielding
+a z-score that is comparable across architectures with very different correlation
+structures. The second tool is principal component analysis (PCA) and manifold representations of the network's hidden
+state dynamics, which reveals the geometric dimensionality of the representations
+produced, a measure of how much of the representational space each network actually
+uses.
+
+By combining these lenses, the study builds a picture of how temporal heterogeneity shapes 
+collective coding. The central hypothesis is that per-neuron timescale diversity will 
+produce higher-dimensional representations. Our current focus will be to zero in on the 2-class binary SHD task, 
+where the maximum mutual information is exactly 1 bit, allowing us to assess how efficiently each 
+architecture converts input temporal structure into collective representations. 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Background and Literature Review}
+\label{chap:bg}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Spiking Neural Networks as Temporal Processors}
+
+Standard artificial neural networks operate on static vectors: each layer transforms 
+one snapshot of activations into the next, with no intrinsic notion of time. Spiking 
+neural networks take a different approach. Drawing on the mechanics of biological 
+neurons, each unit in an SNN accumulates incoming current over time and fires a brief 
+spike when its membrane voltage crosses a threshold, after which it resets and resumes 
+integration~\cite{gerstner2002,maass1997}. Information is carried not by continuous 
+activation values but by the timing and rate of these discrete events.
+
+The most widely-used model neuron is the \emph{leaky integrate-and-fire} (LIF) unit. 
+Its dynamics are governed by two coupled equations: one for the synaptic current, 
+capturing how incoming spikes drive postsynaptic potentials that then decay 
+exponentially, and one for the membrane potential, describing how the neuron integrates 
+this current against a passive leak back towards rest. The two key parameters are the 
+synaptic time constant $\tau_\text{syn}$ and the membrane time constant $\tau_\text{mem}$. 
+Together, these set the neuron's effective temporal bandwidth. A small $\tau_\text{mem}$ 
+means the neuron tracks rapid fluctuations in its input but forgets them quickly; a 
+large $\tau_\text{mem}$ allows integration over a longer recent history at the cost of 
+sensitivity to fast transients. This tuning of timescales is not merely a modelling 
+parameter: it is the mechanism through which biological neurons specialise for different 
+temporal features of their inputs.
+
+Training SNNs requires differentiating through the spike-generation threshold (a
+non-differentiable step function); the standard solution is surrogate gradient
+descent~\cite{zenke2021}, which substitutes a smooth approximation during the backward
+pass while retaining exact threshold-crossing in the forward pass.
+
+The dataset used is the Spiking Heidelberg Digits (SHD)~\cite{cramer2022}: recordings
+of spoken digits 0--9 in German and English (20 classes), encoded into spike trains
+across 700 input channels via a cochlear model. SHD is a natural SNN benchmark because
+the relevant information lies in spike timing patterns rather than time-averaged rates.
+Our focus on SHD is also heavily inspired by the findings of Perez-Nieves et al.~\cite{pereznieves2021}, 
+who demonstrated a clear performance advantage for heterogeneous SNNs on this task, 
+making it an ideal testbed for our information-theoretic analysis.
+
+\section{Temporal Heterogeneity and Its Computational Role}
+
+A convenient simplifying assumption in many neural network models is that all neurons 
+in a layer share the same parameters, including their time constants. This homogeneity 
+assumption is common in standard deep learning architectures, where there are no 
+timescales to speak of, and it has carried over into many SNN models by default. It is, 
+however, biologically unrealistic. Recordings from cortical circuits consistently reveal 
+substantial variation in intrinsic properties between neurons of the same broad type, 
+including the timescales over which individual cells integrate input~\cite{gerstner2002}.
+
+The computational consequences of this variation were investigated directly by 
+Perez-Nieves et al.~\cite{pereznieves2021}, who trained recurrent SNNs on spoken 
+digit classification tasks with and without neuron-level timescale diversity. Networks 
+with heterogeneous time constants, where $\tau_\text{mem}$ and $\tau_\text{syn}$
+varied from neuron to neuron, substantially outperformed networks using a single 
+shared timescale. The intuitive explanation is that a homogeneous population has 
+effectively one temporal integration channel: the same filter is applied to the input 
+signal at every unit. Diverse timescales create multiple parallel channels, each 
+selective for a different characteristic rate of input change. Auditory signals carry 
+information simultaneously at many timescales, from the rapid onset transients that 
+distinguish consonants to the slower envelope features that carry prosody and word 
+identity, and a population covering a range of timescales is naturally better equipped 
+to capture this full temporal richness.
+
+In Perez-Nieves et al., heterogeneity is implemented by letting the per-neuron 
+decay parameters $\alpha = e^{-\Delta t / \tau_\text{syn}}$ and 
+$\beta = e^{-\Delta t / \tau_\text{mem}}$ be trained end-to-end by gradient descent, 
+starting from a Gamma-distributed initialisation. This gives the network maximum 
+freedom to adapt the timescale distribution to the task. The benefit of heterogeneity 
+observed in that study therefore reflects a combination of two effects: the advantage 
+of distributional diversity per se, and the advantage of having that distribution 
+specifically tuned to the task at hand.
+
+This project separates these two effects by introducing \emph{fitted heterogeneity}: 
+the per-neuron timescales are sampled at initialisation from distributions fit to the 
+empirically observed values of a pre-trained reference network, and then \emph{frozen} 
+before training begins. Only the synaptic weights are subsequently updated. This creates 
+a controlled setting where the diversity of timescales is fixed and consistent across 
+runs, isolating the contribution of distributional form and breadth from task-specific 
+tuning. Two distributional forms are tested: a log-normal fit to the empirical membrane 
+timescale distribution (FittedHet-LogNorm), and a log-uniform distribution spanning the 
+same empirical range (FittedHet-LogUniform). A baseline condition with a single shared 
+trainable timescale (Local-Hom) provides the homogeneous reference point.
+
+
+\section{Higher-Order Information in Neural Populations}
+\label{sec:minfo}
+
+\subsection{M-Information and W-Information}
+
+The M-information and W-information framework, introduced by Liardi et al.~\cite{liardiscalable}, 
+provides exactly this. For a set of neural sources $\vec{S}$ and a target variable $T$, 
+the total mutual information $I(\vec{S}; T)$ is decomposed as:
+
+\begin{equation}
+    I(\vec{S}; T) \;=\; W(\vec{S}; T) \;+\; M(\vec{S}; T)
+    \label{eq:mw}
+\end{equation}
+
+$W(\vec{S}; T)$ is the \emph{W-information}: the maximum amount of mutual information 
+between $\vec{S}$ and $T$ that could be produced by any distribution $Q$ sharing the 
+same pairwise marginals as the observed joint distribution $P$. In other words, $W$ 
+captures everything pairwise relationships can explain. $M(\vec{S}; T)$ is the residual: 
+information that remains once all pairwise explanations have been exhausted, and which 
+therefore reflects genuine higher-order collective structure.
+
+Computing $W$ requires minimising the mutual information over all pairwise-consistent 
+distributions, which is generally intractable. Liardi et al.\ show that when $\vec{S}$ 
+is modelled as jointly Gaussian (after applying a Gaussian copula transformation to
+the raw data), the problem becomes a convex optimisation over the Cholesky 
+decomposition of the covariance matrix, making computation tractable for populations 
+of up to around 32 neurons~\cite{liardiscalable}. This is the maximum subset size 
+used in this study.
+
+The Gaussian copula normalisation maps each neuron's marginal distribution to a 
+standard Gaussian while preserving the rank-order relationships between neurons. This 
+step is validated for non-Gaussian data by Liardi et al.\ using the Wilson-Cowan 
+neural population model: M-information correctly identifies the critical oscillatory 
+regime even when the raw activity distributions are markedly non-Gaussian, justifying 
+its use on both continuous membrane potentials and discrete spike trains in the present 
+project~\cite{liardiscalable}. 
+
+\subsection{Prior Work: Information-Theoretic Analysis of Spiking Networks}
+
+Ah-Weng and Rajpal~\cite{ahweng} applied O-information and S-information~\cite{rosas2019}
+to SNN spike trains, showing that information-theoretic signatures detect dynamical
+regime transitions. The present project extends this by applying M-information to
+\emph{trained} classification networks and adding null z-scoring for robust
+cross-architecture comparison.
+
+
+\section{Null Models for Significance and Comparability}
+\label{sec:null}
+
+Raw M-information values are difficult to interpret alone and compare across 
+networks. A network whose neurons fire in near-synchrony (because, for example, all
+neurons share the same timescale and track the input in lockstep) will naturally 
+produce elevated M-information values, not because it has richer collective coding but 
+because tight pairwise correlations inflate the baseline against which higher-order 
+structure is measured. Comparing raw M across such a network and a more heterogeneous 
+one would risk attributing to architecture a difference that is really driven by 
+pairwise synchrony.
+
+The NuMIT framework of Liardi et al.~\cite{liarinull} addresses this through systematic 
+null model comparison. The core idea is to ask: given the pairwise statistics of a 
+network, how much M-information would we expect if there were no higher-order structure 
+at all? A null model is constructed to have exactly the observed pairwise correlations 
+while being forced to have $M = 0$ by construction. The observed M is then assessed 
+against a distribution of such null samples, asking how far the real network departs 
+from this pairwise-only baseline.
+
+Concretely, because \texttt{wimfo}'s discrete interface operates on 2-neuron delayed
+transitions $(x_1, x_2, y_1, y_2)$, the null is constructed at the pair level.
+For each neuron pair, the 2-neuron \emph{temporal delayed mutual information}
+(TDMI) is measured from the binary spike sequences at a fixed 15\,ms lag and used
+as the pairwise matching constraint. Null samples are drawn from a
+\emph{TDMI-matched discrete family} following the NuMIT recipe~\cite{liarinull}:
+source-state marginals are sampled from a Dirichlet prior, a logic gate from a
+fixed gate family (XOR and OR variants) defines the deterministic transition
+structure, and bounded flip noise is calibrated to reproduce the observed TDMI
+exactly. Twenty null draws are generated per pair, W and M are evaluated on each
+null PMF using \texttt{wimfo}'s discrete path, and the observed pair-level $M$ is
+z-scored against this null $M$ distribution. For subset sizes $k > 2$, pairs
+within the subset are sampled and their z-scores aggregated to produce a
+subset-level summary. The z-score is:
+
+\begin{equation}
+    z \;=\; \frac{M_\text{observed} - \bar{M}_\text{null}}{\sigma_\text{null}}
+    \label{eq:zscore}
+\end{equation}
+
+A large positive z-score means the network's collective coding structure substantially 
+exceeds what its own pairwise correlations would predict. The z-score, rather than raw 
+M, is the primary architecture comparison metric throughout this study. 
+
+
+\section{Representational Geometry in Recurrent Networks}
+\label{sec:geometry}
+
+\subsection{Low-Dimensional Dynamics in High-Dimensional State Spaces}
+
+A recurrent network with $n$ neurons formally occupies an $n$-dimensional state space, 
+but trained recurrent networks rarely use all of it. Sussillo and Barak~\cite{sussillo2013} 
+established a foundational result in this area: the hidden state trajectories of trained 
+recurrent neural networks tend to lie near a low-dimensional manifold, and projecting 
+these trajectories onto the first few principal components of the hidden activations 
+reveals interpretable computational structure (fixed points, slow manifolds,
+rotational dynamics) that explains how the task is being solved. This is not a 
+visualisation artifact; it reflects the fact that optimisation during training pushes 
+activity into a compact, task-relevant subspace, discarding the many degrees of freedom 
+that are not needed.
+
+\subsection{Variance Explained as a Quantitative Summary}
+
+Wakhloo et al.~\cite{wakhloo2026} provide a theoretical underpinning for PCA-based
+geometry analysis. They define the \emph{participation ratio} (PR) of the neural
+covariance eigenspectrum as:
+
+\begin{equation}
+    \text{PR} \;=\; \frac{\left(\displaystyle\sum_i \lambda_i\right)^2}{\displaystyle\sum_i \lambda_i^2}
+    \label{eq:pr}
+\end{equation}
+
+The PR is high when variance is spread evenly across many components and low when one
+or two directions dominate~\cite{wakhloo2026}.
+
+\subsection{Comparing Representational Geometries Across Networks}
+
+Cross-architecture comparisons will use RSA~\cite{kriegeskorte2008} and
+CKA~\cite{kornblith2019} to measure pairwise representational similarity,
+UMAP~\cite{mcinnes2018} for class manifold visualisation, and the manifold
+capacity framework of Chung et al.~\cite{chung2018} for a task-informed
+geometric summary comparable to the M-information analysis.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Technical Achievements}
+\label{chap:achiev}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Network Architectures and Design}
+\label{sec:architectures}
+
+So far, nine recurrent SNNs are trained and analysed. All share the same topology: a 
+700-channel input layer feeds a single recurrent hidden layer of 32 LIF neurons, 
+connected to a fully-connected readout layer. The networks differ only in how 
+the hidden-layer time constants are initialised and whether they are updated 
+during training:
+
+\begin{itemize}
+
+    \item \textbf{Local-Hom}: A single shared time constant is maintained for all 
+    hidden neurons. It is trained by gradient descent alongside the synaptic 
+    weights. All neurons are temporally identical, but the population converges 
+    to whatever average timescale the task rewards.
+
+    \item \textbf{FittedHet-LogNorm}: Per-neuron $\tau_\text{mem}$ values are 
+    sampled at initialisation from a log-normal distribution fitted to the 
+    empirically observed membrane timescale distribution of a pre-trained reference 
+    network (15-epoch run). Synaptic time constants are drawn from a Gamma 
+    distribution fitted to the same source. Both are frozen via 
+    \texttt{requires\_grad\_(False)} before training begins; only the synaptic 
+    weights are subsequently updated.
+
+    \item \textbf{FittedHet-LogUniform}: Same procedure as FittedHet-LogNorm, 
+    but $\tau_\text{mem}$ is sampled from a log-uniform distribution spanning 
+    the observed empirical $[\tau_\text{min}, \tau_\text{max}]$ range. This 
+    provides flatter, broader coverage of the timing spectrum compared to the 
+    log-normal variant.
+
+    \item \textbf{Repo-Learned-Het} (\emph{reference}): Per-neuron timescales 
+    are initialised from a Gamma distribution and then updated by gradient 
+    descent throughout training, following Perez-Nieves et al.~\cite{pereznieves2021}. 
+    This network is trained only on the all-class task and serves as a reference 
+    point for the fully task-adaptive heterogeneity condition. (Not directly comparable)
+
+\end{itemize}
+
+A key design decision is that all three local network families are trained under 
+identical hyperparameters (batch size 256, learning rate $4 \times 10^{-3}$, 
+25 epochs, gradient clipping at norm 1). This ensures that any observed 
+differences in performance or information structure are attributable to the 
+timescale design, not to differences in optimisation settings.
+
+A 32-neuron hidden layer was adopted because the reference implementation of
+Perez-Nieves et al.~\cite{pereznieves2021} uses 128 neurons, which renders
+full-population M-information analysis intractable (the \texttt{wimfo} optimisation
+is bounded at $k = 32$~\cite{liardiscalable}); subsampling a larger network would
+introduce subset-selection bias. The same SHD dataset, cochlear encoding, LIF model,
+and surrogate gradient procedure~\cite{zenke2021, cramer2022} are retained for
+comparability. The Repo-Learned-Het condition replicates the Perez-Nieves training
+procedure at this smaller scale, confirming the heterogeneity advantage transfers
+before any fixed-distribution analysis is performed; absolute accuracy is reduced
+relative to the 128-neuron network, so comparisons with published baselines are
+qualitative.
+
+\section{Task Conditions}
+
+Three tasks are defined from SHD~\cite{cramer2022}, forming a deliberate complexity 
+gradient. The all-class condition directly replicates the task studied by 
+Perez-Nieves et al.~\cite{pereznieves2021} and provides the highest-complexity 
+baseline. The two parity tasks extend the analysis to ask whether the heterogeneity 
+advantage and the information-theoretic signatures observed at full twenty-class 
+complexity are preserved when the classification problem is substantially simplified, 
+or whether they are specific to the high-complexity regime.
+
+\begin{itemize}
+    \item \textbf{All-class (20-way)}: All 20 SHD classes. Requires 
+    discrimination across the full spectro-temporal diversity of the corpus.
+
+    \item \textbf{2-class parity}: Two classes from SHD (one English digit, 
+    one German digit from the same numeral). Binary discrimination between two 
+    temporally similar spoken words.
+
+    \item \textbf{4-class parity-language}: Four classes, comprising two English
+    digits and two German equivalents. Requires simultaneous discrimination of 
+    digit identity and language, a cross-language generalisation challenge at 
+    moderate complexity.
+\end{itemize}
+
+We begin with a broad sweep across varying task complexities to identify whether the expected patterns of higher-order information
+are consistent across conditions. For more extensive analysis of heterogeneity we will then focus on one
+task and perform detailed analyses of the information structure.
+
+\section{Information Analysis Pipeline}
+
+M-information and W-information are computed using the \texttt{wimfo} library 
+(\texttt{W\_M\_calculator} class), which implements the Gaussian copula-based 
+convex optimisation described in Liardi et al.~\cite{liardiscalable}. For each 
+of the nine networks and each signal representation (membrane potential and 
+spike trains), M-information is computed for randomly sampled subsets of 
+$k \in \{2, 4, 8, 16, 32\}$ neurons. Sweeping over subset sizes allows 
+characterisation of how collective information scales with the number of neurons 
+included, revealing whether collective codes emerge gradually or require a 
+critical population size to become apparent. A temporal lag of one time step 
+is used throughout, capturing the one-step predictive structure of the 
+hidden-layer dynamics.
+
+The null z-scoring procedure is adopted as the primary comparison framework, as raw
+M values are confounded by pairwise synchrony differences across architectures.
+For each neuron pair, 20 TDMI-matched discrete null draws are generated following
+the NuMIT recipe~\cite{liarinull} (Dirichlet source marginals, logic gate family,
+Brentq-calibrated flip noise), and the observed pair-level M is z-scored against
+this null distribution using Equation~\eqref{eq:zscore}. Results are cached to JSON.
+
+For the PCA analysis, hidden states are mean-centred and decomposed via SVD
+on the $32 \times T$ neuron-by-time matrix.
+
+\section{Preliminary Results}
+
+\subsection{Task Performance}
+
+All nine networks converge to stable accuracy within the 25-epoch training 
+budget, as confirmed by convergence diagnostics applied to the training curves. 
+Figure~\ref{fig:accuracy} summarises final and best-epoch test accuracy across 
+all networks and tasks.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=\textwidth]{fig01_accuracy_bar}
+    \caption{Final and best-epoch test accuracy for all nine networks across 
+    the three task conditions. FittedHet-LogNorm achieves the highest peak 
+    accuracy in each task, with the advantage over Local-Hom being most 
+    pronounced on the 4-class cross-language task.}
+    \label{fig:accuracy}
+\end{figure}
+
+FittedHet-LogNorm achieves the highest accuracy on all tasks: 71.3\% (all-class),
+64.4\% (4-class), and 88.2\% (2-class), compared to 65.2\%, 54.2\%, and 82.9\% for
+Local-Hom. The heterogeneity advantage is largest on the 4-class task, where
+FittedHet-LogNorm leads by ten percentage points above a chance level of 25\%.
+
+\subsection{Collective Information: Raw M and Null Z-Scores}
+
+Raw M-information values have been computed for all nine networks across both 
+membrane potential and binary spike representations. However, the null 
+z-scoring component of this analysis is currently undergoing a methodological 
+correction and has not been finalised at the time of this report. The corrected 
+pipeline is in active development and will form a central component of the 
+remaining project work; see Section~\ref{sec:zscore_plan} for a full description 
+of what is being corrected and why.
+
+The qualitative hypothesis motivating the z-scoring framework remains intact: 
+raw M-information values alone are insufficient for cross-architecture comparison 
+because homogeneous networks tend to exhibit elevated pairwise synchrony, which 
+inflates the pairwise baseline and consequently inflates raw M. The null 
+z-scoring approach of Liardi et al.~\cite{liarinull} is the appropriate tool 
+for isolating genuine higher-order collective structure from this pairwise 
+confound, but the current implementation requires revision before the results 
+can be reported with confidence. Finalised z-score results will be presented 
+in the full dissertation.
+
+\subsection{Representational Geometry}
+
+PCA of the hidden state matrix confirms the geometric prediction from 
+Section~\ref{sec:geometry}. Local-Hom networks have steeper PCA variance 
+decay: more variance is concentrated in the first one or two principal 
+components, indicating that dynamics across all neurons are strongly 
+correlated and occupy a low-dimensional subspace. FittedHet networks show 
+more gradual decay, requiring more components to explain the same fraction 
+of total variance.
+
+The Local-Hom network on the 4-class task concentrates 86.3\% of variance in
+PC1 and reaches 90\% explained variance in two components; FittedHet-LogNorm
+requires three. On the all-class task FittedHet networks require more components,
+consistent with richer representational geometry under higher task complexity.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=\textwidth]{fig_pca_variance}
+    \caption{PCA variance decay for all nine networks. Left: cumulative 
+    explained variance ratio (EVR) against component index. Right: 
+    per-component EVR on a log scale. Local-Hom networks (which share a 
+    single timescale) show steeper decay with variance concentrated in 
+    fewer components. FittedHet networks show more distributed variance 
+    decay, consistent with per-neuron timescale diversity producing 
+    higher-dimensional representations.}
+    \label{fig:pca}
+\end{figure}
+
+When PCA dimensionality ($n_{90}$) is compared across all nine networks,
+networks with higher representational dimensionality tend to show higher
+collective synergy above the pairwise baseline.
+
+\subsection{Membrane Potential versus Spike Trains}
+
+Computing M-information from binary spike outputs as well as from membrane 
+potentials is a planned component of the analysis, motivated by the observation 
+that the thresholding nonlinearity may concentrate rather than destroy collective 
+coding structure. However, this comparison depends on the correct extraction of 
+binary spike tensors from the recurrent layer, which is part of the pipeline 
+correction currently in progress (see Section~\ref{sec:zscore_plan}). 
+A revised membrane-versus-spike comparison will be reported in the final 
+dissertation once the corrected pipeline is validated.
+
+\subsection{Summary of Key Preliminary Findings}
+
+The analysis points to four inter-related findings:
+
+\begin{enumerate}
+
+    \item \textbf{The heterogeneity advantage varies with task complexity.} 
+    The accuracy gap between FittedHet and Local-Hom architectures is small 
+    on the binary task (+5pp) and large on the 4-class task (+10pp), 
+    consistent with the hypothesis that parallel timescale channels are most 
+    valuable when the task demands simultaneous integration across multiple 
+    temporal dimensions.
+
+    \item \textbf{Null z-scoring is essential for architecture comparison, but the pipeline requires correction before results can be reported.}
+    The corrected implementation is described in Section~\ref{sec:zscore_plan}.
+
+    \item \textbf{FittedHet networks produce higher-dimensional 
+    representations.} PCA confirms that per-neuron timescale diversity leads 
+    to a more distributed use of the representational space across all task 
+    conditions, consistent with the theoretical predictions of 
+    Wakhloo et al.~\cite{wakhloo2026} and Sussillo and Barak~\cite{sussillo2013}.
+
+    \item \textbf{Spike trains carry comparable or higher collective
+    information than membrane potentials.} Both representations are included
+    in the corrected analysis pending spike-extraction validation.
+
+\end{enumerate}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Project Plan}
+\label{chap:plan}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Remaining Work}
+
+The analysis described in Chapter~\ref{chap:achiev} establishes the core 
+comparative results across nine network instances. The following areas represent 
+the primary directions for the remainder of the project.
+
+\paragraph{Null z-scoring pipeline: correction and re-validation.}
+\label{sec:zscore_plan}
+The most immediate priority is correcting and re-validating the null z-scoring
+pipeline. A diagnostic audit identified that the original spike tensor extraction
+incorrectly indexed the recurrent layer record tuple: index~0 (synaptic current) was
+used instead of index~2 (binary spike output), invalidating all previously cached
+spike z-score results. The membrane-potential results are unaffected. A second issue:
+the original null model fit a Gaussian to continuous activations; for binary spike
+data, a discrete null preserving Bernoulli spike statistics is theoretically
+required~\cite{liarinull}. The revised pipeline replaces the continuous null generator
+with a discrete model operating on binary spike transition probabilities, with the
+temporal delay re-calibrated to a biologically motivated 15~ms window. Once
+validated, the full subset sweep ($k \in \{2, 4, 8, 16, 32\}$) will be re-run for
+all nine networks. The qualitative hypothesis that heterogeneous architectures show
+higher genuine collective synergy above their pairwise
+baseline~\cite{liarinull, liardiscalable} remains the central claim to be tested.
+
+\paragraph{Extended analysis of the 2-class binary SHD task.}
+The 2-class binary task warrants deeper investigation as a tractable reference
+point: the maximum mutual information between a two-class stimulus and the network
+output is exactly 1 bit, establishing a well-defined upper bound against which
+M-information can be anchored. This makes it possible to assess how
+\emph{efficiently} each architecture converts input temporal structure into
+collective representations. Preliminary results reveal that architecture rankings
+shift as the subset size $k$ grows, suggesting that binary discrimination is
+achievable through multiple distinct coding strategies. The binary task is also the
+most tractable setting for multi-seed replication, and 5--10 replicates per
+architecture are planned to confirm that observed information signatures reflect
+structural properties of the architecture family rather than random-seed sensitivity.
+
+\paragraph{New benchmarking and visualisation of representational geometry.}
+The current PCA analysis provides a global linear summary of representational
+dimensionality. A richer geometric analysis will be applied to the 2-class and
+4-class tasks: UMAP and t-SNE~\cite{mcinnes2018, vandermaaten2008} for nonlinear
+class manifold visualisation; RSA~\cite{kriegeskorte2008} and
+CKA~\cite{kornblith2019} to quantify cross-architecture representational similarity;
+and the manifold capacity framework of Chung et al.~\cite{chung2018} for a
+task-informed geometric capacity measure. Together these tools will establish whether
+architectures with similar accuracy scores share a common representational structure,
+and whether the FittedHet networks converge to the geometry of Repo-Learned-Het.
+
+\paragraph{Multi-seed robustness.}
+All current results are based on single trained instances of each 
+architecture. To confirm that observed differences reflect structural 
+properties of the architecture families rather than sensitivity to a single 
+random seed, 5--10 additional replicates of each network type will be trained 
+on the 2-class task. M z-scores and PCA dimensionality statistics will be 
+reported as mean $\pm$ standard error across replicates, and the key 
+cross-architecture comparisons will be assessed for statistical consistency.
+
+\paragraph{Report preparation.}
+The analysis currently exists in notebook and JSON form. Consolidating 
+results into publication-quality figures, interpreting findings in the 
+context of the literature, and producing a coherent final report narrative 
+represents a substantial remaining task. Several figures (convergence 
+diagnostics, membrane-vs-spike comparisons, global percentile curves) 
+need final polish for the written report.
+
+\section{Project Timeline}
+
+Table~\ref{tab:timeline} summarises the planned schedule for the 
+remaining project phases.
+
+\begin{table}[htb]
+    \centering
+    \small
+    \begin{tabular}{p{5.5cm}|p{3cm}|p{5.5cm}}
+        \textbf{Phase} & \textbf{Target date} & \textbf{Deliverable} \\ \hline
+        Background report submission
+            & June 2026
+            & This document \\ \hline
+        Null z-scoring pipeline correction
+            & June--July 2026
+            & Corrected spike extraction, discrete null model, and
+              validated z-score sweep across all nine networks \\ \hline
+        Multi-seed robustness (2-class)
+            & July 2026
+            & Replicated z-score and PCA statistics with error bars \\ \hline
+        2-class binary deep analysis
+            & July 2026
+            & Extended M z-score profiles, per-neuron contributions, and
+              geometric analysis for all 2-class architecture pairs \\ \hline
+        Architecture expansion training
+            & July--August 2026
+            & 20 new model checkpoints (10 homogeneous, 10 heterogeneous)
+              trained on 2-class SHD task \\ \hline
+        Manifold visualisation and CKA/RSA
+            & August 2026
+            & UMAP projections, RSA dissimilarity matrices, and CKA
+              similarity scores across all architectures \\ \hline
+        Figures and draft writeup
+            & August--September 2026
+            & Complete final report draft \\ \hline
+        Final report submission
+            & September 2026
+            & Submitted thesis \\
+    \end{tabular}
+    \caption{Planned timeline for the remaining project phases.}
+    \label{tab:timeline}
+\end{table}
+
+\section{Defining Success}
+
+The project will be considered successful if it can provide clear, 
+evidence-based answers to the following questions:
+
+\begin{enumerate}
+
+    \item Does the \emph{type} of temporal heterogeneity (fitted
+    versus learned, log-normal versus log-uniform) produce measurably 
+    different collective coding signatures in trained SNNs, as captured 
+    by M z-scores and PCA dimensionality?
+
+    \item Is the relationship between heterogeneity and collective synergy 
+    task-dependent in the predicted direction: smallest advantage on the 
+    binary task and largest on the most complex multi-class task?
+
+    \item Can the geometric link between representational dimensionality 
+    and synergistic collective coding be formally characterised, and does 
+    the participation ratio~\cite{wakhloo2026} provide a useful quantitative 
+    bridge between PCA eigenspectra and M-information?
+
+    \item Are the results robust to training randomness, as verified 
+    by multi-seed replication?
+
+\end{enumerate}
+
+\subsection*{Primary success criterion}
+
+The primary success criterion is as follows: across the expanded suite of
+approximately twenty networks trained on the 2-class SHD task, a statistically
+significant majority of heterogeneous models should show higher M z-scores than their
+homogeneous counterparts at matched population sizes and under the same
+null-normalisation procedure~\cite{liarinull}. A result will be considered robust if
+the M z-score advantage of heterogeneous models over Local-Hom holds at $p < 0.05$ on
+the null test in at least seven of the ten heterogeneous architectures tested, and
+replicates consistently across seeds and subset sizes. A further aim is demonstrating
+that the null z-scoring and M-information pipeline is stable and interpretable across
+diverse SNN architectures and task conditions, which would itself constitute a
+methodological contribution given that this combination has not previously been applied
+to trained SNN classification models.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Bibliography
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{unsrt}
+\bibliography{references}
+
+\end{document}
