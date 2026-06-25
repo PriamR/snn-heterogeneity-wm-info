@@ -216,23 +216,25 @@ longer timescales if the parameterisation permitted it.
 
 ### 6.3b Per-Seed Paired Summary
 
-| Seed | Homo τ (ms) | Hetero τ Mean | Hetero τ Std | Hetero CV | Hetero Range | ΔAcc (pp) |
-|------|-------------|---------------|--------------|-----------|--------------|------------|
-| 101 | 26.7 | 39.9 | 31.8 | 0.80 | [3.4, 99.7] | **+8.0** |
-| 202 | 27.1 | 39.4 | 31.2 | 0.79 | [2.2, 99.7] | **+12.5** |
-| 210 | 24.8 | 37.1 | 30.6 | 0.82 | [3.3, 99.7] | **+20.7** |
-| 340 | 22.0 | 33.1 | 28.7 | 0.87 | [2.1, 99.7] | **+9.2** |
-| 440 | 30.8 | 43.8 | 32.9 | 0.75 | [2.2, 99.7] | **+11.6** |
-| 550 | 27.5 | 40.5 | 31.3 | 0.77 | [2.1, 99.7] | **+10.7** |
-| 660 | 20.1 | 30.0 | 26.8 | 0.90 | [2.9, 99.7] | **+22.8** |
-| 710 | 21.6 | 31.0 | 27.1 | 0.87 | [4.0, 99.7] | **+4.8** |
-| 820 | 27.5 | 37.8 | 28.9 | 0.76 | [2.3, 99.7] | **+17.4** |
-| 930 | 22.4 | 30.8 | 25.7 | 0.83 | [3.3, 99.7] | **+12.5** |
-| **Mean** | **25.1** | **36.3** | **29.5** | **0.82** | — | **+13.0** |
+| Seed | Homo τ (ms) | Hetero Median | Hetero τ Mean | Hetero τ Std | Hetero CV | Hetero Range | ΔAcc (pp) |
+|------|-------------|---------------|---------------|--------------|-----------|--------------|------------|
+| 101 | 26.7 | 34.5 | 39.9 | 31.8 | 0.80 | [3.4, 99.7] | **+8.0** |
+| 202 | 27.1 | 30.1 | 39.4 | 31.2 | 0.79 | [2.2, 99.7] | **+12.5** |
+| 210 | 24.8 | 29.0 | 37.1 | 30.6 | 0.82 | [3.3, 99.7] | **+20.7** |
+| 340 | 22.0 | 20.7 | 33.1 | 28.7 | 0.87 | [2.1, 99.7] | **+9.2** |
+| 440 | 30.8 | 30.3 | 43.8 | 32.9 | 0.75 | [2.2, 99.7] | **+11.6** |
+| 550 | 27.5 | 30.1 | 40.5 | 31.3 | 0.77 | [2.1, 99.7] | **+10.7** |
+| 660 | 20.1 | 21.0 | 30.0 | 26.8 | 0.90 | [2.9, 99.7] | **+22.8** |
+| 710 | 21.6 | 20.8 | 31.0 | 27.1 | 0.87 | [4.0, 99.7] | **+4.8** |
+| 820 | 27.5 | 28.0 | 37.8 | 28.9 | 0.76 | [2.3, 99.7] | **+17.4** |
+| 930 | 22.4 | 22.0 | 30.8 | 25.7 | 0.83 | [3.3, 99.7] | **+12.5** |
+| **Mean** | **25.1** | **26.7** | **36.3** | **29.5** | **0.82** | — | **+13.0** |
 
 *Each seed's homo τ is a single value shared by all 64 neurons (within-seed std = 0.00 ms). Hetero τ
 statistics are computed across the 64 per-neuron values. ΔAcc = hetero − homo test accuracy.
-All hetero seeds span the full ≈2–100 ms range, with 10–11% of neurons saturating at the 99.7 ms cap.*
+*All hetero seeds span the full ≈2–100 ms range, with 10–11% of neurons saturating at the 99.7 ms cap.
+Notice the median is consistently lower than the mean (e.g. seed 101: median 34.5 vs mean 39.9 ms) — the
+distribution is right-skewed, pulled upward by the slow-tail neurons clustering near the 99.7 ms cap.*
 
 *CV (Coefficient of Variation) = σ / μ — the standard deviation divided by the mean. It measures
 relative dispersion: CV = 0 means all neurons have identical τ (like homo), while CV = 0.82 means
