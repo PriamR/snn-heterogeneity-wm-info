@@ -234,6 +234,11 @@ longer timescales if the parameterisation permitted it.
 statistics are computed across the 64 per-neuron values. ΔAcc = hetero − homo test accuracy.
 All hetero seeds span the full ≈2–100 ms range, with 10–11% of neurons saturating at the 99.7 ms cap.*
 
+*CV (Coefficient of Variation) = σ / μ — the standard deviation divided by the mean. It measures
+relative dispersion: CV = 0 means all neurons have identical τ (like homo), while CV = 0.82 means
+the standard deviation is 82% of the mean — a very wide spread. CV is unitless, so it can be compared
+across seeds with different mean τ values.*
+
 ### 6.4 How τ Diversity Creates the Dimensionality Gap
 
 The connection between τ spread and PCA dimensionality is mechanistic:
