@@ -1,3 +1,5 @@
+> **Superseded.** The final code, trained networks and analyses for the MSc thesis *Neural heterogeneity promotes robust learning by increasing representational separability* (Imperial College London, 2026) are at **https://github.com/PriamR/neural-heterogeneity-separability**. This repository is an early working snapshot (July 2026), kept read-only for reference; its results predate the final thesis.
+
 # Heterogeneous Time Constants in Recurrent Spiking Neural Networks
 
 MSc Artificial Intelligence thesis — Imperial College London, 2026 (in progress).
